@@ -14,7 +14,7 @@ namespace QueueReaderBierAPI
     public static class QueueReader
     {
         [FunctionName("QueueReader")]
-        public static async void RunAsync([QueueTrigger("myqueue-items", Connection = "QueueString")]string myQueueItem, TraceWriter log)
+        public static async void RunAsync([QueueTrigger("bierapi-queue", Connection = "QueueString")]string myQueueItem, TraceWriter log)
         {
             try
             {
