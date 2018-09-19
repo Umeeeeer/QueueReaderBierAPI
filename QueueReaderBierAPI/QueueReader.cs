@@ -1,0 +1,82 @@
+using System;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Host;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Newtonsoft.Json;
+using QueueReaderBierAPI.Models;
+
+namespace QueueReaderBierAPI
+{
+    public static class QueueReader
+    {
+        [FunctionName("QueueReader")]
+        public static async void RunAsync([QueueTrigger("myqueue-items", Connection = "QueueString")]string myQueueItem, TraceWriter log)
+        {
+            try
+            {
+                //Queuemessage van json omzetten naar object
+                QueueStorageMessage queueMessage = JsonConvert.DeserializeObject<QueueStorageMessage>(myQueueItem);
+
+                //Azuremaps key ophalen uit local.settings.json
+                string azuremapskey = Environment.GetEnvironmentVariable("AzuremapsKey");
+
+                using (var client = new HttpClient())
+                {
+                    // Retrieve storage account from connection string.
+                    CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("QueueString"));
+
+                    // Create the blob client.
+                    CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+                    // Retrieve a reference to a container.
+                    CloudBlobContainer container = blobClient.GetContainerReference(queueMessage.BlobContainerReference);
+
+                    // Create the container if it doesn't already exist.
+                    await container.CreateIfNotExistsAsync();
+
+                    // create a blob in the path of the <container>/email/guid
+                    CloudBlockBlob blockBlob = container.GetBlockBlobReference(queueMessage.BlobName);
+
+                    var url = String.Format("https://atlas.microsoft.com/map/static/png?subscription-key={0}&api-version=1.0&center={1},{2}", azuremapskey, queueMessage.Longtitude, queueMessage.Latitude);
+                    client.BaseAddress = new Uri(url);
+                    HttpResponseMessage response = await client.GetAsync(url);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        System.IO.Stream responseStream = await response.Content.ReadAsStreamAsync();
+
+                        //Upload retrieved image to blobstorage
+                        await blockBlob.UploadFromStreamAsync(responseStream);
+
+                        log.Info("Image retrieved from azuremaps and uploaded to blob succesfully");
+                    }
+
+                    else
+                    {
+                        try
+                        {
+                            HttpWebRequest errorimagerequest = (HttpWebRequest)WebRequest.Create(Environment.GetEnvironmentVariable("ErrorImageLink"));
+                            HttpWebResponse errorimageresponse = (HttpWebResponse)errorimagerequest.GetResponse();
+                            Stream inputStream = errorimageresponse.GetResponseStream();
+                            await blockBlob.UploadFromStreamAsync(inputStream);
+
+                            log.Info("Could not retrieve image from azuremaps, uploaded error image instead");
+                        }
+
+                        catch { log.Info("Error retrieving azure maps image and also error retrieving error image"); }
+                    }
+                }
+            }
+
+            catch
+            {
+                log.Error("try catch failed / could not parse jsonstring to object");
+            }
+
+        }
+    }
+}
