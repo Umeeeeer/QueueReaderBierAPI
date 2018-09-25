@@ -47,7 +47,9 @@ namespace QueueReaderBierAPI
 
                     if (response.IsSuccessStatusCode)
                     {
+                        Helpers.WeatherHelper weatherHelper = new Helpers.WeatherHelper();
                         System.IO.Stream responseStream = await response.Content.ReadAsStreamAsync();
+                        responseStream = await weatherHelper.PaintWeatherAsync(responseStream, queueMessage);
 
                         //Upload retrieved image to blobstorage
                         await blockBlob.UploadFromStreamAsync(responseStream);
