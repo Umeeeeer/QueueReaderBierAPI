@@ -63,21 +63,32 @@ namespace QueueReaderBierAPI
                             {
                                 string json = await response.Content.ReadAsStringAsync();
                                 dynamic jsonobject = JsonConvert.DeserializeObject<dynamic>(json);
-                                double temp_min = (double)jsonobject.main.temp_min;
-                                double temp_max = (double)jsonobject.main.temp_max;
-                                double temp = (double)jsonobject.main.temp;
 
-                                if (temp > 15)
+                                if(jsonobject.cod == 401)
                                 {
-                                    responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt GEEN bier aangeraden!", (10, 40)));
-
+                                    log.Info("API KEY weathermapsapi ongeldig");
                                 }
 
                                 else
                                 {
-                                    responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt bier aangeraden!", (10, 40)));
+                                    double temp_min = (double)jsonobject.main.temp_min;
+                                    double temp_max = (double)jsonobject.main.temp_max;
+                                    double temp = (double)jsonobject.main.temp;
 
+                                    if (temp > 15)
+                                    {
+                                        responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt GEEN bier aangeraden!", (10, 40)));
+
+                                    }
+
+                                    else
+                                    {
+                                        responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt bier aangeraden!", (10, 40)));
+
+                                    }
                                 }
+
+
                             }
 
                             else
