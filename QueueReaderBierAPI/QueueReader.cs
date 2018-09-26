@@ -8,6 +8,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 using QueueReaderBierAPI.Models;
+using QueueReaderBierAPI.Helpers;
 
 namespace QueueReaderBierAPI
 {
@@ -50,7 +51,7 @@ namespace QueueReaderBierAPI
                     if (response.IsSuccessStatusCode)
                     {
                         log.Info("Azure maps ophalen gelukt");
-                        Helpers.WeatherHelper weatherHelper = new Helpers.WeatherHelper();
+                        WeatherHelper weatherHelper = new WeatherHelper();
                         System.IO.Stream responseStream = await response.Content.ReadAsStreamAsync();
 
                         using (var client2 = new HttpClient())
@@ -79,6 +80,11 @@ namespace QueueReaderBierAPI
 
                                     if (true)
                                     {
+                                        log.Info("Methode uitvoeren");
+                                        System.IO.Stream responseStreamFoto = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)));
+                                        log.Info("Methode uitgevoerd");
+                                        log.Info("Uploaden van blob");
+                                        await blockBlob.UploadFromStreamAsync(responseStreamFoto);
                                         //responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt GEEN bier aangeraden!", (10, 40)));
 
                                     }
@@ -98,12 +104,6 @@ namespace QueueReaderBierAPI
                                 //responseStream = weatherHelper.AddTextToImage(responseStream, ("Op dit moment kan de weerdata niet worden opgehaald, probeer het later opnieuw!", (10, 20)));
                             }
                         }
-
-                        //Upload retrieved image to blobstorage
-                        log.Info("Uploaden van blob");
-                            await blockBlob.UploadFromStreamAsync(responseStream);
-
-                        log.Info("Image retrieved from azuremaps and uploaded to blob succesfully");
                     }
 
                     else
