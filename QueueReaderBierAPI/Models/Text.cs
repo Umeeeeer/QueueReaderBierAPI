@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace QueueReaderBierAPI.Models
 {
-    class texts
+    public class Text
     {
+        public string text { get; set; }
+        public float x { get; set; }
+        public float y { get; set; }
     }
 }
