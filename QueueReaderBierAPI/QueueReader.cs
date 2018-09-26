@@ -74,13 +74,13 @@ namespace QueueReaderBierAPI
 
                             if (temp > 15)
                             {
-                                Text text2 = new Text("Er wordt aangeraden om bier te drinken!", 10, 40);
+                                Text text2 = new Text("Er wordt aangeraden om bier te drinken!", 10, 50);
                                 texts.Add(text2);
                             }
 
                             else
                             {
-                                Text text2 = new Text("Er wordt aangeraden om GEEN bier te drinken!", 10, 40);
+                                Text text2 = new Text("Er wordt aangeraden om GEEN bier te drinken!", 10, 50);
                                 texts.Add(text2);
                             }
 
