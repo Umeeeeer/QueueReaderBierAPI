@@ -9,6 +9,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json;
 using QueueReaderBierAPI.Models;
 using QueueReaderBierAPI.Helpers;
+using System.Collections.Generic;
 
 namespace QueueReaderBierAPI
 {
@@ -51,7 +52,6 @@ namespace QueueReaderBierAPI
                     if (response.IsSuccessStatusCode)
                     {
                         log.Info("Azure maps ophalen gelukt");
-                        WeatherHelper weatherHelper = new WeatherHelper();
                         System.IO.Stream responseStream = await response.Content.ReadAsStreamAsync();
 
                         using (var client2 = new HttpClient())
@@ -81,10 +81,16 @@ namespace QueueReaderBierAPI
                                     if (true)
                                     {
                                         log.Info("Methode uitvoeren");
-                                        System.IO.Stream responseStreamFoto = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)));
+                                        List<Text> texts = new List<Text>();
+                                        Text text1 = new Text();
+                                        text1.text = String.Format("text1");
+                                        text1.x = 10;
+                                        text1.y = 20;
+                                        texts.Add(text1);
+                                        var responseStreamFoto = ImageHelper.AddTextToImage(responseStream, texts);
                                         log.Info("Methode uitgevoerd");
                                         log.Info("Uploaden van blob");
-                                        await blockBlob.UploadFromStreamAsync(responseStreamFoto);
+                                        await blockBlob.UploadFromStreamAsync((Stream)responseStreamFoto);
                                         //responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt GEEN bier aangeraden!", (10, 40)));
 
                                     }
