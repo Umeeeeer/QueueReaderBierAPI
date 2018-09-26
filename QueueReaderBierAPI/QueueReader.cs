@@ -69,19 +69,23 @@ namespace QueueReaderBierAPI
                             double temp_min = (double)jsonobject.main.temp_min - 273;
                             double temp_max = (double)jsonobject.main.temp_max - 273;
                             double temp = (double)jsonobject.main.temp - 273;
-                            Text text1 = new Text(String.Format("Min temp: {0} , Gem temp: {1}, Max temp: {2}", temp_min, temp, temp_max), 10, 20);
+                            Text text1 = new Text(String.Format("Min temp: {0}", temp_min), 10, 20);
+                            Text text2 = new Text(String.Format("Gem temp: {0}", temp), 10, 50);
+                            Text text3 = new Text(String.Format("Max temp: {0}", temp_max), 10, 80);
                             texts.Add(text1);
+                            texts.Add(text2);
+                            texts.Add(text3);
 
                             if (temp > 15)
                             {
-                                Text text2 = new Text("Er wordt aangeraden om bier te drinken!", 10, 50);
-                                texts.Add(text2);
+                                Text text4 = new Text("Er wordt aangeraden om bier te drinken!", 10, 110);
+                                texts.Add(text4);
                             }
 
                             else
                             {
-                                Text text2 = new Text("Er wordt aangeraden om GEEN bier te drinken!", 10, 50);
-                                texts.Add(text2);
+                                Text text4 = new Text("Er wordt aangeraden om GEEN bier te drinken!", 10, 110);
+                                texts.Add(text4);
                             }
 
                             Stream responseStreamFoto = ImageHelper.AddTextToImage(responseStream, texts);

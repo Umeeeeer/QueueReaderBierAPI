@@ -18,7 +18,7 @@ namespace QueueReaderBierAPI.Helpers
             Font drawFont = new Font("Arial", 20);
             foreach (Text text in texts)
             {
-                graphics.DrawString(text.text, drawFont, Brushes.Black, text.x, text.y);
+                graphics.DrawString(text.text, drawFont, Brushes.Red, text.x, text.y);
             }
 
             Stream ms = new MemoryStream();
