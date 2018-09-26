@@ -75,7 +75,7 @@ namespace QueueReaderBierAPI
                                     string temp_min = (string)jsonobject.main.temp_min;
                                     string temp_max = (string)jsonobject.main.temp_max;
                                     string temp = (string)jsonobject.main.temp;
-
+                                    log.Info("temp parsed");
                                     if (true)
                                     {
                                         responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt GEEN bier aangeraden!", (10, 40)));
