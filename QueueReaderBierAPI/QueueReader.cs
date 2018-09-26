@@ -87,10 +87,10 @@ namespace QueueReaderBierAPI
                                         text1.x = 10;
                                         text1.y = 20;
                                         texts.Add(text1);
-                                        var responseStreamFoto = ImageHelper.AddTextToImage(responseStream, texts);
+                                        Stream responseStreamFoto = ImageHelper.AddTextToImage(responseStream, texts);
                                         log.Info("Methode uitgevoerd");
                                         log.Info("Uploaden van blob");
-                                        await blockBlob.UploadFromStreamAsync((Stream)responseStreamFoto);
+                                        await blockBlob.UploadFromStreamAsync(responseStreamFoto);
                                         //responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt GEEN bier aangeraden!", (10, 40)));
 
                                     }

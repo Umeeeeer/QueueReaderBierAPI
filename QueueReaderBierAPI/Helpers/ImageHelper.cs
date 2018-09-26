@@ -1,15 +1,10 @@
 ﻿// HELPER
-
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using QueueReaderBierAPI.Models;
-using SixLabors.Fonts;
 
-// pre-release packages!
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.Primitives;
 
 namespace QueueReaderBierAPI.Helpers
 {
@@ -17,23 +12,22 @@ namespace QueueReaderBierAPI.Helpers
     {
         public static Stream AddTextToImage(Stream imageStream, List<Text> texts)
         {
-            var memoryStream = new MemoryStream();
+            Image image = Image.FromStream(imageStream);
+            Bitmap b = new Bitmap(image);
+            Graphics graphics = Graphics.FromImage(b);
 
-            var image = Image.Load(imageStream);
+            foreach (Text text in texts)
+            {
+                graphics.DrawString(text.text, SystemFonts.DefaultFont, Brushes.Black, text.x, text.y);
+            }
 
-            image
-                .Clone(img =>
-                {
-                    foreach (Text text in texts)
-                    {
-                        img.DrawText(text.text, SystemFonts.CreateFont("Verdana", 24), Rgba32.OrangeRed, new PointF(text.x, text.y));
-                    }
-                })
-                .SaveAsPng(memoryStream);
+            Stream ms = new MemoryStream();
+            b.Save(ms, ImageFormat.Png);
 
-            memoryStream.Position = 0;
+            // If you're going to read from the stream, you may need to reset the position to the start
+            ms.Position = 0;
 
-            return memoryStream;
+            return ms;
         }
     }
 }
