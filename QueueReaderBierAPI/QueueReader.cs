@@ -18,6 +18,8 @@ namespace QueueReaderBierAPI
         {
             try
             {
+                log.Info("Queue triggered");
+
                 //Queuemessage van json omzetten naar object
                 QueueStorageMessage queueMessage = JsonConvert.DeserializeObject<QueueStorageMessage>(myQueueItem);
 
@@ -47,12 +49,45 @@ namespace QueueReaderBierAPI
 
                     if (response.IsSuccessStatusCode)
                     {
+                        log.Info("Azure maps ophalen gelukt");
                         Helpers.WeatherHelper weatherHelper = new Helpers.WeatherHelper();
                         System.IO.Stream responseStream = await response.Content.ReadAsStreamAsync();
-                        responseStream = await weatherHelper.PaintWeatherAsync(responseStream, queueMessage);
 
-                        //Upload retrieved image to blobstorage
-                        await blockBlob.UploadFromStreamAsync(responseStream);
+                        using (var client2 = new HttpClient())
+                        {
+                            var url2 = String.Format("http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}", queueMessage.Latitude, queueMessage.Longtitude);
+                            client.BaseAddress = new Uri(url);
+                            HttpResponseMessage response2 = await client.GetAsync(url);
+
+                            if (response.IsSuccessStatusCode)
+                            {
+                                string json = await response.Content.ReadAsStringAsync();
+                                dynamic jsonobject = JsonConvert.DeserializeObject<dynamic>(json);
+                                double temp_min = (double)jsonobject.main.temp_min - 273.15;
+                                double temp_max = (double)jsonobject.main.temp_max - 273.15;
+                                double temp = (double)jsonobject.main.temp - 273.15;
+
+                                if (temp < 15)
+                                {
+                                    responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt GEEN bier aangeraden!", (10, 40)));
+
+                                }
+
+                                else
+                                {
+                                    responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt bier aangeraden!", (10, 40)));
+
+                                }
+                            }
+
+                            else
+                            {
+                                responseStream = weatherHelper.AddTextToImage(responseStream, ("Op dit moment kan de weerdata niet worden opgehaald, probeer het later opnieuw!", (10, 20)));
+                            }
+                        }
+
+                            //Upload retrieved image to blobstorage
+                            await blockBlob.UploadFromStreamAsync(responseStream);
 
                         log.Info("Image retrieved from azuremaps and uploaded to blob succesfully");
                     }
