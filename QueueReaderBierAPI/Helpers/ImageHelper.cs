@@ -15,16 +15,15 @@ namespace QueueReaderBierAPI.Helpers
             Image image = Image.FromStream(imageStream);
             Bitmap b = new Bitmap(image);
             Graphics graphics = Graphics.FromImage(b);
-
+            Font drawFont = new Font("Arial", 25);
             foreach (Text text in texts)
             {
-                graphics.DrawString(text.text, SystemFonts.DefaultFont, Brushes.Black, text.x, text.y);
+                graphics.DrawString(text.text, drawFont, Brushes.Black, text.x, text.y);
             }
 
             Stream ms = new MemoryStream();
             b.Save(ms, ImageFormat.Png);
 
-            // If you're going to read from the stream, you may need to reset the position to the start
             ms.Position = 0;
 
             return ms;
