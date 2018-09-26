@@ -71,11 +71,12 @@ namespace QueueReaderBierAPI
 
                                 else
                                 {
-                                    double temp_min = (double)jsonobject.main.temp_min;
-                                    double temp_max = (double)jsonobject.main.temp_max;
-                                    double temp = (double)jsonobject.main.temp;
+                                    log.Info("API KEY IS GELDIG");
+                                    string temp_min = (string)jsonobject.main.temp_min;
+                                    string temp_max = (string)jsonobject.main.temp_max;
+                                    string temp = (string)jsonobject.main.temp;
 
-                                    if (temp > 15)
+                                    if (true)
                                     {
                                         responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt GEEN bier aangeraden!", (10, 40)));
 
@@ -97,7 +98,8 @@ namespace QueueReaderBierAPI
                             }
                         }
 
-                            //Upload retrieved image to blobstorage
+                        //Upload retrieved image to blobstorage
+                        log.Info("Uploaden van blob");
                             await blockBlob.UploadFromStreamAsync(responseStream);
 
                         log.Info("Image retrieved from azuremaps and uploaded to blob succesfully");
