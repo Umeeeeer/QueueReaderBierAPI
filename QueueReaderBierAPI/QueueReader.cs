@@ -24,7 +24,7 @@ namespace QueueReaderBierAPI
                 QueueStorageMessage queueMessage = JsonConvert.DeserializeObject<QueueStorageMessage>(myQueueItem);
 
                 // Retrieve storage account from connection string.
-                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("QueueString"));
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("StorageConnectionString"));
 
                 // Create the blob client.
                 CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
@@ -34,6 +34,11 @@ namespace QueueReaderBierAPI
 
                 // Create the container if it doesn't already exist.
                 await container.CreateIfNotExistsAsync();
+
+                BlobContainerPermissions permissions = new BlobContainerPermissions
+                {
+                    PublicAccess = BlobContainerPublicAccessType.Blob
+                };
 
                 // create a blob in the path of the <container>/email/guid
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(queueMessage.BlobName);
