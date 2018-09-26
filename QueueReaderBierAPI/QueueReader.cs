@@ -63,11 +63,11 @@ namespace QueueReaderBierAPI
                             {
                                 string json = await response.Content.ReadAsStringAsync();
                                 dynamic jsonobject = JsonConvert.DeserializeObject<dynamic>(json);
-                                double temp_min = (double)jsonobject.main.temp_min - 273.15;
-                                double temp_max = (double)jsonobject.main.temp_max - 273.15;
-                                double temp = (double)jsonobject.main.temp - 273.15;
+                                string temp_min = (string)jsonobject.main.temp_min;
+                                string temp_max = (string)jsonobject.main.temp_max;
+                                string temp = (string)jsonobject.main.temp;
 
-                                if (temp < 15)
+                                if (true)
                                 {
                                     responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt GEEN bier aangeraden!", (10, 40)));
 
