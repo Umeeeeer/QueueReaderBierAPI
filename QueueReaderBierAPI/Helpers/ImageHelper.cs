@@ -15,7 +15,7 @@ namespace QueueReaderBierAPI.Helpers
             Image image = Image.FromStream(imageStream);
             Bitmap b = new Bitmap(image);
             Graphics graphics = Graphics.FromImage(b);
-            Font drawFont = new Font("Arial", 25);
+            Font drawFont = new Font("Arial", 20);
             foreach (Text text in texts)
             {
                 graphics.DrawString(text.text, drawFont, Brushes.Black, text.x, text.y);
