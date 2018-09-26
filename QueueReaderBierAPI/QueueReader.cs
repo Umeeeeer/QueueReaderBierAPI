@@ -57,7 +57,7 @@ namespace QueueReaderBierAPI
                         {
                             var url2 = String.Format("https://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID=77af417e896786a3d0ef59eac07b46da", queueMessage.Latitude, queueMessage.Longtitude);
                             client2.BaseAddress = new Uri(url2);
-                            HttpResponseMessage response2 = await client2.GetAsync(url);
+                            HttpResponseMessage response2 = await client2.GetAsync(url2);
 
                             if (response2.IsSuccessStatusCode)
                             {
