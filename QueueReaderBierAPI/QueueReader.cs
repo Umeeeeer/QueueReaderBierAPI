@@ -55,7 +55,7 @@ namespace QueueReaderBierAPI
 
                         using (var client2 = new HttpClient())
                         {
-                            var url2 = String.Format("http://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}", queueMessage.Latitude, queueMessage.Longtitude);
+                            var url2 = String.Format("https://api.openweathermap.org/data/2.5/weather?lat={0}&lon={1}&APPID=77af417e896786a3d0ef59eac07b46da", queueMessage.Latitude, queueMessage.Longtitude);
                             client.BaseAddress = new Uri(url);
                             HttpResponseMessage response2 = await client.GetAsync(url);
 
@@ -63,11 +63,11 @@ namespace QueueReaderBierAPI
                             {
                                 string json = await response.Content.ReadAsStringAsync();
                                 dynamic jsonobject = JsonConvert.DeserializeObject<dynamic>(json);
-                                string temp_min = (string)jsonobject.main.temp_min;
-                                string temp_max = (string)jsonobject.main.temp_max;
-                                string temp = (string)jsonobject.main.temp;
+                                double temp_min = (double)jsonobject.main.temp_min;
+                                double temp_max = (double)jsonobject.main.temp_max;
+                                double temp = (double)jsonobject.main.temp;
 
-                                if (true)
+                                if (temp > 15)
                                 {
                                     responseStream = weatherHelper.AddTextToImage(responseStream, (String.Format("Min: {0} Gem: {1} Max: {2}", temp_min, temp, temp_max), (10, 20)), ("Hier wordt GEEN bier aangeraden!", (10, 40)));
 
