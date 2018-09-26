@@ -59,9 +59,9 @@ namespace QueueReaderBierAPI
                             client.BaseAddress = new Uri(url);
                             HttpResponseMessage response2 = await client.GetAsync(url);
 
-                            if (response.IsSuccessStatusCode)
+                            if (response2.IsSuccessStatusCode)
                             {
-                                string json = await response.Content.ReadAsStringAsync();
+                                string json = await response2.Content.ReadAsStringAsync();
                                 dynamic jsonobject = JsonConvert.DeserializeObject<dynamic>(json);
 
                                 if(jsonobject.cod == 401)
